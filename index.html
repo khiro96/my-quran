@@ -6,74 +6,75 @@
     <title>مصحف الطمأنينة</title>
     <style>
         :root { 
-            --bg-color: #fcfaf5; /* لون ورقي مريح للعين */
+            --bg-color: #fcfaf5; 
             --text-color: #2c3e50; 
             --accent-green: #065f46;
-            --border-gold: #d4af37;
         }
         body { font-family: 'Times New Roman', serif; margin: 0; background: var(--bg-color); color: var(--text-color); }
         
-        /* هيدر ثابت وراقي */
         header { 
-            background: white; padding: 15px; display: flex; justify-content: space-between; 
-            align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            background: white; padding: 10px 15px; display: flex; justify-content: space-between; 
+            align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .container { max-width: 800px; margin: auto; padding: 15px; }
 
-        /* زر العودة للحفظ (عائم واحترافي) */
-        #resume-btn {
-            background: var(--accent-green); color: white; border: none; padding: 12px 20px;
-            border-radius: 50px; font-weight: bold; cursor: pointer; display: none;
-            box-shadow: 0 4px 15px rgba(6, 95, 70, 0.3); margin: 10px auto; width: fit-content;
-        }
-
-        /* تنسيق الفهرس */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card { 
-            background: white; border-radius: 15px; padding: 20px; text-align: center; 
-            cursor: pointer; border: 1px solid #eee; transition: 0.3s;
-        }
-        .card:hover { border-color: var(--accent-green); background: #f0fdf4; }
-
-        /* أهم جزء: وضوح الخط والقراءة */
+        /* تعديل حجم الخط ليكون متجاوباً */
         .quran-container { 
-            background: white; padding: 40px 30px; border-radius: 20px; 
-            line-height: 2.5; text-align: justify; direction: rtl;
-            font-size: 2.2rem; /* خط كبير وواضح جداً */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            background: white; padding: 25px 20px; border-radius: 15px; 
+            line-height: 2.2; text-align: justify; direction: rtl;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
             border: 1px solid #f1f1f1;
+            word-wrap: break-word;
+        }
+
+        /* تخصيص الحجم حسب نوع الجهاز */
+        @media (max-width: 600px) {
+            .quran-container { font-size: 1.5rem; padding: 20px 15px; } /* حجم مثالي للموبايل */
+            .basmalah { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr 1fr; } /* تقسيم الفهرس لعمودين في الموبايل */
+        }
+
+        @media (min-width: 601px) {
+            .quran-container { font-size: 2.1rem; } /* حجم كبير للحاسوب */
+            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
         }
         
-        .basmalah { text-align: center; font-size: 2.5rem; color: var(--accent-green); margin-bottom: 30px; }
-        
-        .verse { cursor: pointer; transition: 0.2s; border-radius: 8px; padding: 0 5px; position: relative; }
-        .verse:hover { background: #f1f5f9; }
-        .last-read { background: #fff9c4 !important; border-bottom: 3px solid var(--border-gold); } /* تمييز ذهبي */
-        
-        .v-num { font-size: 0.6em; color: var(--accent-green); margin: 0 8px; font-weight: bold; }
+        .basmalah { text-align: center; color: var(--accent-green); margin-bottom: 20px; }
+        .verse { cursor: pointer; border-radius: 5px; padding: 0 3px; }
+        .last-read { background: #fff9c4; border-bottom: 2px solid #d4af37; }
+        .v-num { font-size: 0.7em; color: var(--accent-green); margin: 0 5px; font-weight: bold; opacity: 0.7; }
 
+        /* ترتيب الفهرس */
+        .grid { display: grid; gap: 10px; margin-top: 15px; }
+        .card { 
+            background: white; border-radius: 10px; padding: 15px; text-align: center; 
+            cursor: pointer; border: 1px solid #eee; font-weight: bold;
+        }
+
+        #resume-btn {
+            background: var(--accent-green); color: white; border: none; padding: 12px;
+            border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer; display: none;
+        }
         .hidden { display: none; }
-        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
 <header>
-    <button id="btn-back" class="hidden" style="background:#f1f5f9; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;" onclick="showIndex()">✕ إغلاق</button>
-    <h2 id="main-title" style="margin:0; font-size: 1.4rem;">مصحف الطمأنينة</h2>
-    <div id="save-status" style="font-size: 0.8rem; color: var(--accent-green); font-weight: bold;"></div>
+    <button id="btn-back" class="hidden" onclick="showIndex()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+    <h3 id="main-title" style="margin:0;">مصحف الطمأنينة</h3>
+    <div id="save-status" style="font-size: 0.7rem; color: var(--accent-green);"></div>
 </header>
 
-<div class="container text-center">
-    <button id="resume-btn" onclick="resumeReading()">📖 العودة لمكان الحفظ</button>
+<div class="container">
+    <button id="resume-btn" onclick="resumeReading()"></button>
 
     <div id="index-page" class="grid"></div>
 
     <div id="reader-page" class="hidden">
         <div id="basmalah" class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
         <div id="quran-text" class="quran-container"></div>
-        <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 20px;">* اضغط على أي آية لحفظ مكانك تلقائياً</p>
     </div>
 </div>
 
@@ -98,10 +99,7 @@
     function renderIndex(list) {
         indexPage.innerHTML = '';
         list.forEach(s => {
-            indexPage.innerHTML += `
-                <div class="card" onclick="openSurah(${s.id}, '${s.name_arabic}')">
-                    <b style="font-size:1.3rem;">${s.name_arabic}</b>
-                </div>`;
+            indexPage.innerHTML += `<div class="card" onclick="openSurah(${s.id}, '${s.name_arabic}')">${s.name_arabic}</div>`;
         });
     }
 
@@ -111,80 +109,39 @@
         readerPage.classList.remove('hidden');
         document.getElementById('btn-back').classList.remove('hidden');
         document.getElementById('main-title').innerText = name;
-        
         document.getElementById('basmalah').style.display = (id == 9 || id == 1) ? 'none' : 'block';
-        quranText.innerHTML = "<p style='text-align:center;'>جاري فتح المصحف...</p>";
+        quranText.innerHTML = "<p style='text-align:center;'>جاري التحميل...</p>";
 
-        try {
-            const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
-            const data = await res.json();
-            
-            quranText.innerHTML = '';
-            data.verses.forEach(v => {
-                const vNum = v.verse_key.split(':')[1];
-                const span = document.createElement('span');
-                span.className = 'verse';
-                span.id = `v-${v.verse_key}`;
-                span.innerHTML = `${v.text_uthmani} <span class="v-num">﴿${vNum}﴾</span> `;
-                span.onclick = () => savePosition(v.verse_key, name, id);
-                quranText.appendChild(span);
-            });
+        const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
+        const data = await res.json();
+        
+        quranText.innerHTML = '';
+        data.verses.forEach(v => {
+            const vNum = v.verse_key.split(':')[1];
+            const span = document.createElement('span');
+            span.className = 'verse';
+            span.id = `v-${v.verse_key}`;
+            span.innerHTML = `${v.text_uthmani} <span class="v-num">﴿${vNum}﴾</span> `;
+            span.onclick = () => savePosition(v.verse_key, name, id);
+            quranText.appendChild(span);
+        });
 
-            // إذا دخلنا عن طريق زر "العودة للحفظ"
-            const targetVerse = scrollVerse || getSavedVerseForKey(id);
-            if (targetVerse) {
-                setTimeout(() => {
-                    const el = document.getElementById(`v-${targetVerse}`);
-                    if(el) {
-                        el.classList.add('last-read');
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }, 500);
-            }
-        } catch(e) { quranText.innerHTML = "يرجى التحقق من اتصال الإنترنت."; }
-    }
-
-    function getSavedVerseForKey(surahId) {
-        const saved = JSON.parse(localStorage.getItem('user_bookmark') || '{}');
-        return (saved.surahId == surahId) ? saved.key : null;
+        const targetVerse = scrollVerse || (JSON.parse(localStorage.getItem('user_bookmark') || '{}').surahId == id ? JSON.parse(localStorage.getItem('user_bookmark')).key : null);
+        if (targetVerse) {
+            setTimeout(() => {
+                const el = document.getElementById(`v-${targetVerse}`);
+                if(el) { el.classList.add('last-read'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            }, 500);
+        }
     }
 
     function savePosition(key, name, surahId) {
         document.querySelectorAll('.verse').forEach(v => v.classList.remove('last-read'));
         document.getElementById(`v-${key}`).classList.add('last-read');
-        
-        const bookmark = { key, name, surahId };
-        localStorage.setItem('user_bookmark', JSON.stringify(bookmark));
-        
-        document.getElementById('save-status').innerText = "✓ تم الحفظ";
-        setTimeout(() => document.getElementById('save-status').innerText = "", 1500);
+        localStorage.setItem('user_bookmark', JSON.stringify({ key, name, surahId }));
+        document.getElementById('save-status').innerText = "تم الحفظ ✓";
+        setTimeout(() => document.getElementById('save-status').innerText = "", 1000);
     }
 
     function updateResumeButton() {
-        const saved = JSON.parse(localStorage.getItem('user_bookmark') || 'null');
-        if (saved) {
-            resumeBtn.style.display = 'block';
-            resumeBtn.innerText = `📖 واصل القراءة: سورة ${saved.name}`;
-        }
-    }
-
-    function resumeReading() {
-        const saved = JSON.parse(localStorage.getItem('user_bookmark'));
-        if (saved) openSurah(saved.surahId, saved.name, saved.key);
-    }
-
-    function showIndex() {
-        indexPage.classList.remove('hidden');
-        readerPage.classList.add('hidden');
-        document.getElementById('btn-back').classList.add('hidden');
-        document.getElementById('main-title').innerText = "مصحف الطمأنينة";
-        updateResumeButton();
-        window.scrollTo(0,0);
-    }
-
-    start();
-</script>
-
-</body>
-
-</html>
+        const saved = JSON.parse(localStorage.getItem('user_bookmark') ||
