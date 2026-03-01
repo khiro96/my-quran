@@ -2,34 +2,42 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مصحف الطمأنينة</title>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #fcfaf5; color: #2c3e50; }
-        header { background: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+        body { font-family: sans-serif; margin: 0; background: #fcfaf5; color: #2c3e50; line-height: 1.6; }
+        header { background: #065f46; color: white; padding: 15px; text-align: center; sticky: top; }
         .container { max-width: 600px; margin: auto; padding: 15px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: white; border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .quran-container { background: white; padding: 20px; border-radius: 10px; line-height: 2; text-align: justify; font-size: 1.4rem; border: 1px solid #eee; }
+        .card { background: white; border: 1px solid #ddd; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .quran-container { background: white; padding: 20px; border-radius: 10px; text-align: justify; font-size: 1.5rem; line-height: 2.2; border: 1px solid #eee; }
         .basmalah { text-align: center; font-size: 1.8rem; color: #065f46; margin-bottom: 15px; }
-        .verse { cursor: pointer; }
+        .v-num { color: #065f46; font-size: 0.9rem; margin: 0 5px; font-weight: bold; }
         .last-read { background: #fff9c4; border-bottom: 2px solid #d4af37; }
-        .v-num { color: #065f46; font-size: 0.8rem; margin: 0 5px; }
-        #resume-btn { background: #065f46; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer; display: none; font-weight: bold; }
+        #resume-btn { background: #d4af37; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; margin-bottom: 15px; cursor: pointer; display: none; font-weight: bold; font-size: 1.1rem; }
         .hidden { display: none; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-bottom: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-<header>
-    <button id="btn-back" class="hidden" onclick="showIndex()">✕</button>
-    <h3 id="main-title" style="margin:0;">مصحف الطمأنينة</h3>
-    <div id="save-status"></div>
+<div id="nav" class="nav-bar hidden">
+    <button onclick="location.reload()" style="padding:5px 15px;">✕ رجوع</button>
+    <b id="surah-title"></b>
+    <span></span>
+</div>
+
+<header id="main-header">
+    <h1>مصحف الطمأنينة</h1>
 </header>
 
 <div class="container">
     <button id="resume-btn" onclick="resumeReading()"></button>
-    <div id="index-page" class="grid"></div>
+    
+    <div id="index-page" class="grid">
+        <p style="grid-column: 1/3; text-align: center;">جاري تحميل الفهرس...</p>
+    </div>
+
     <div id="reader-page" class="hidden">
         <div id="basmalah" class="basmalah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
         <div id="quran-text" class="quran-container"></div>
@@ -42,82 +50,76 @@
     const quranText = document.getElementById('quran-text');
     const resumeBtn = document.getElementById('resume-btn');
 
-    async function start() {
-        try {
-            const res = await fetch('https://api.quran.com/api/v4/chapters?language=ar');
-            const data = await res.json();
-            renderIndex(data.chapters);
-            updateResumeButton();
-        } catch (e) { document.body.innerHTML = "يرجى التحقق من الإنترنت وإعادة المحاولة."; }
-    }
+    // 1. جلب السور
+    fetch('https://api.quran.com/api/v4/chapters?language=ar')
+        .then(res => res.json())
+        .then(data => {
+            indexPage.innerHTML = '';
+            data.chapters.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerText = s.name_arabic;
+                div.onclick = () => openSurah(s.id, s.name_arabic);
+                indexPage.appendChild(div);
+            });
+            checkBookmark();
+        })
+        .catch(() => indexPage.innerHTML = "حدث خطأ. تأكد من الإنترنت.");
 
-    function renderIndex(list) {
-        indexPage.innerHTML = '';
-        list.forEach(s => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerText = s.name_arabic;
-            div.onclick = () => openSurah(s.id, s.name_arabic);
-            indexPage.appendChild(div);
-        });
-    }
-
-    async function openSurah(id, name, scrollVerse = null) {
+    // 2. فتح السورة
+    function openSurah(id, name, savedVerse = null) {
+        document.getElementById('main-header').classList.add('hidden');
+        document.getElementById('nav').classList.remove('hidden');
         indexPage.classList.add('hidden');
         resumeBtn.classList.add('hidden');
         readerPage.classList.remove('hidden');
-        document.getElementById('btn-back').classList.remove('hidden');
-        document.getElementById('main-title').innerText = name;
-        document.getElementById('basmalah').style.display = (id == 9 || id == 1) ? 'none' : 'block';
-        quranText.innerHTML = "جاري التحميل...";
-
-        const res = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`);
-        const data = await res.json();
+        document.getElementById('surah-title').innerText = name;
         
-        quranText.innerHTML = '';
-        data.verses.forEach(v => {
-            const vNum = v.verse_key.split(':')[1];
-            const span = document.createElement('span');
-            span.className = 'verse';
-            span.id = `v-${v.verse_key}`;
-            span.innerHTML = v.text_uthmani + ` <span class="v-num">﴿${vNum}﴾</span> `;
-            span.onclick = () => savePosition(v.verse_key, name, id);
-            quranText.appendChild(span);
-        });
+        document.getElementById('basmalah').style.display = (id == 9 || id == 1) ? 'none' : 'block';
+        quranText.innerHTML = "جاري تحميل الآيات...";
 
-        if (scrollVerse) {
-            setTimeout(() => {
-                const el = document.getElementById(`v-${scrollVerse}`);
-                if(el) { el.classList.add('last-read'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-            }, 500);
-        }
+        fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${id}`)
+            .then(res => res.json())
+            .then(data => {
+                quranText.innerHTML = '';
+                data.verses.forEach(v => {
+                    const num = v.verse_key.split(':')[1];
+                    const span = document.createElement('span');
+                    span.id = "v-" + v.verse_key;
+                    span.style.cursor = "pointer";
+                    span.innerHTML = v.text_uthmani + ` <span class="v-num">﴿${num}﴾</span> `;
+                    span.onclick = () => {
+                        document.querySelectorAll('span').forEach(s => s.classList.remove('last-read'));
+                        span.classList.add('last-read');
+                        localStorage.setItem('quran_bookmark', JSON.stringify({id, name, key: v.verse_key}));
+                        alert("تم حفظ المكان بنجاح");
+                    };
+                    quranText.appendChild(span);
+                });
+
+                if(savedVerse) {
+                    const el = document.getElementById("v-" + savedVerse);
+                    if(el) {
+                        el.classList.add('last-read');
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
     }
 
-    function savePosition(key, name, surahId) {
-        document.querySelectorAll('.verse').forEach(v => v.classList.remove('last-read'));
-        document.getElementById(`v-${key}`).classList.add('last-read');
-        localStorage.setItem('user_bookmark', JSON.stringify({ key, name, surahId }));
-        alert("تم حفظ مكانك في سورة " + name);
-    }
-
-    function updateResumeButton() {
-        const saved = JSON.parse(localStorage.getItem('user_bookmark') || 'null');
+    // 3. نظام الحفظ
+    function checkBookmark() {
+        const saved = JSON.parse(localStorage.getItem('quran_bookmark'));
         if (saved) {
             resumeBtn.style.display = 'block';
-            resumeBtn.innerText = `📖 واصل من سورة ${saved.name}`;
+            resumeBtn.innerText = "📖 العودة إلى: " + saved.name;
         }
     }
 
     function resumeReading() {
-        const saved = JSON.parse(localStorage.getItem('user_bookmark'));
-        if (saved) openSurah(saved.surahId, saved.name, saved.key);
+        const saved = JSON.parse(localStorage.getItem('quran_bookmark'));
+        if (saved) openSurah(saved.id, saved.name, saved.key);
     }
-
-    function showIndex() {
-        location.reload(); // أضمن طريقة للعودة وتحديث الفهرس
-    }
-
-    start();
 </script>
 </body>
 </html>
