@@ -6,444 +6,1126 @@
     <title>مصحفي الإلكتروني</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/kfgqpc-uthmanic-script-hafs-regular" rel="stylesheet">
 
     <style>
-	
-		/* إخفاء جميع السور افتراضياً */
-		.surah-container { 
-			display: none; 
-		}
+			:root {
+				--bg-color: #f9f7f2;
+				--container-bg: #ffffff;
+				--text-color: #2c3e50;
+				--accent-color: #2d5a27;
+			}
 
-		/* إظهار السورة التي تحمل كلاس active فقط */
-		.surah-container.active {
-			display: block;
-			animation: fadeIn 0.5s;
-		}
+			.dark-mode {
+				--bg-color: #1a1a1a;
+				--container-bg: #2d2d2d;
+				--text-color: #e0e0e0;
+				--accent-color: #4caf50;
+			}
 
-		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-	
-        :root {
-            --bg-color: #f9f7f2;
-            --container-bg: #ffffff;
-            --text-color: #2c3e50;
-            --accent-color: #2d5a27; /* لون أخضر إسلامي */
-        }
+			body {
+				font-family: 'Amiri', serif;
+				background-color: var(--bg-color);
+				color: var(--text-color);
+				margin: 0;
+				padding: 0;
+				transition: all 0.3s ease;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
 
-        /* إعدادات الوضع الليلي */
-        .dark-mode {
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --text-color: #e0e0e0;
-            --accent-color: #81c784;
-        }
+			/* تنسيق الحاوية الرئيسية للفهرس */
+			.sidebar {
+				width: 95%;
+				max-width: 600px;
+				margin: 40px auto;
+				padding: 20px;
+				background: var(--container-bg);
+				border-radius: 20px;
+				box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* ظل ناعم */
+			}
 
-        body {
-            font-family: 'Amiri', serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+			/* عنوان الفهرس */
+			.sidebar h1 {
+				text-align: center;
+				color: var(--accent-color);
+				font-size: 2rem;
+				margin-bottom: 30px;
+				border-bottom: 2px double var(--accent-color);
+				padding-bottom: 10px;
+			}
 
-        .surah-container {
-            background-color: var(--container-bg);
-            max-width: 850px;
-            width: 100%;
-            margin-top: 60px;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            line-height: 2.5; /* مسافة كافية بين الأسطر للحركات */
-            text-align: center;
-        }
+			/* تنسيق بطاقة السورة */
+			.surah-card {
+				background: #ffffff;
+				margin-bottom: 15px;
+				padding: 18px 25px;
+				border-radius: 15px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border: 1px solid #eee;
+				transition: all 0.3s ease;
+				cursor: pointer;
+				position: relative;
+				overflow: hidden;
+			}
 
-        h1 {
-            color: var(--accent-color);
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--accent-color);
-            display: inline-block;
-            padding-bottom: 10px;
-        }
+			/* تأثير عند تمرير الماوس */
+			.surah-card:hover {
+				transform: translateY(-3px);
+				box-shadow: 0 5px 15px rgba(45, 90, 39, 0.15);
+				border-color: var(--accent-color);
+				background-color: #f0f4f0;
+			}
 
-        .quran-text {
-            font-size: 28px; /* حجم كبير لسهولة القراءة */
-            word-spacing: 5px;
-            text-align: justify;
-            text-justify: inter-word;
-        }
+			/* رقم السورة داخل دائرة */
+			.surah-number {
+				background: var(--accent-color);
+				color: white;
+				width: 35px;
+				height: 35px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
+				font-weight: bold;
+				font-size: 0.9rem;
+				margin-left: 15px;
+			}
 
-        /* زر الوضع الليلي */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-family: 'Amiri', serif;
-            font-size: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
+			.surah-info {
+				flex-grow: 1;
+				display: flex;
+				flex-direction: column;
+			}
 
-        .theme-toggle:hover {
-            opacity: 0.9;
-        }
+			.surah-name {
+				font-size: 1.3rem;
+				font-weight: bold;
+				color: var(--text-color);
+			}
 
-        /* تنسيق البسملة */
-        .bismillah {
-            font-size: 32px;
-            display: block;
-            margin-bottom: 30px;
-            color: var(--accent-color);
-        }
-		
-				/* تنسيق الفهرس الجانبي */
-		.sidebar {
-			height: 100%;
-			width: 200px;
-			position: fixed;
-			z-index: 1;
-			top: 0;
-			right: 0; /* الفهرس جهة اليمين */
-			background-color: var(--container-bg);
-			overflow-x: hidden;
-			padding-top: 80px;
-			border-left: 1px solid var(--accent-color);
-			transition: 0.3s;
-		}
+			.surah-meta {
+				font-size: 0.85rem;
+				color: #888;
+			}
 
-		.sidebar a {
-			padding: 10px 15px;
-			text-decoration: none;
-			font-size: 20px;
-			color: var(--text-color);
-			display: block;
-			transition: 0.3s;
-			border-bottom: 1px solid #eee;
-		}
+			/* أيقونة السهم الصغير جهة اليسار */
+			.surah-card::after {
+				content: '←';
+				font-size: 1.2rem;
+				color: var(--accent-color);
+				opacity: 0.5;
+			}
 
-		.sidebar a:hover {
-			background-color: var(--accent-color);
-			color: white;
-		}
-
-		/* تعديل مساحة المحتوى الأساسي ليعطي مجالاً للفهرس */
-		body {
-			padding-right: 220px; /* دفع المحتوى لليسار لترك مساحة للفهرس */
-		}
-
-		@media screen and (max-width: 700px) {
-			.sidebar { width: 100%; position: relative; height: auto; border-left: none; }
-			body { padding-right: 20px; }
-		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-    </style>
-	
-	
-	
-	
-		
-		<link href="https://fonts.cdnfonts.com/css/kfgqpc-uthmanic-script-hafs-regular" rel="stylesheet">
-
-	<style>
-		/* 2. أمر المتصفح بتفعيل محرك الحركات العثمانية */
-		.quran-text {
-			font-family: 'KFGQPC Uthmanic Script HAFS', sans-serif !important;
-			font-size: 35px !important;
-			line-height: 2.2 !important;
-			text-align: center;
-			direction: rtl;
-			
-			/* أهم 3 أسطر لتفعيل المد والألف الخنجرية */
-			font-feature-settings: "ss01" on, "ss03" on, "calt" on, "liga" on;
-			text-rendering: optimizeLegibility;
-			-webkit-font-smoothing: antialiased;
-		}
-		
-		
-		
-		
-				/* تنسيق أساسي للشاشات الكبيرة (الحاسوب) */
-		.quran-text {
-			font-size: 45px; /* حجم كبير وواضح للحاسوب */
-			padding: 20px;
-			max-width: 900px;
-			margin: 0 auto;
-		}
-
-		/* تنسيق خاص للأجهزة المتوسطة (الايباد والتابلت) */
-		@media screen and (max-width: 1024px) {
-			.quran-text {
-				font-size: 35px; /* نصغر الخط شوي للايباد */
+			.surah-card {
+				background: var(--container-bg);
+				margin: 10px 0;
 				padding: 15px;
+				border-radius: 12px;
+				cursor: pointer;
+				box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+				transition: transform 0.2s;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 			}
-		}
 
-		/* تنسيق خاص للأجهزة الصغيرة (الجوال) */
-		@media screen and (max-width: 600px) {
+			.surah-card:hover { transform: scale(1.02); }
+
+			/* الكود القاضي للتوسيط المطلق للسورة */
+			.surah-container { display: none; }
+
+			.surah-container.active {
+				display: flex !important;
+				flex-direction: column;
+				align-items: center;
+				position: fixed !important;
+				top: 0; left: 0; right: 0; bottom: 0;
+				width: 100vw !important;
+				height: 100vh !important;
+				background-color: var(--bg-color) !important;
+				z-index: 9999;
+				overflow-y: auto;
+				padding: 40px 20px;
+				box-sizing: border-box;
+			}
+
+			/* تنسيق نص القرآن (نفس الموقع اللي طلبته) */
 			.quran-text {
-				font-size: 28px; /* حجم مناسب جداً لشاشة الجوال */
-				line-height: 2.2; /* نحافظ على مسافة الحركات عشان ما تتداخل */
-				padding: 10px;
-				letter-spacing: 0px; /* نلغي أي مسافات زائدة */
+				font-family: 'KFGQPC Uthmanic Script HAFS', sans-serif !important;
+				font-size: 2.2rem;
+				line-height: 2.5;
+				text-align: center;
+				max-width: 850px;
+				margin: 0 auto !important;
+				font-feature-settings: "ss01" on, "ss03" on, "calt" on, "liga" on;
 			}
-		}
-		
-		
-		
-		
-		
-		
-		
-		
-				
-				/* 1. استدعاء الخط الرسمي */
-		@import url('https://fonts.cdnfonts.com/css/kfgqpc-uthmanic-script-hafs-regular');
 
-		.quran-text {
-			font-family: 'KFGQPC Uthmanic Script HAFS', serif !important;
-			font-size: 2.5rem; /* حجم افتراضي */
-			line-height: 2.2;
-			text-align: center;
-			direction: rtl;
-			padding: 20px;
-			/* تفعيل حركات المد والألف الخنجرية */
-			font-feature-settings: "ss01" on, "ss03" on, "calt" on, "liga" on;
-			transition: font-size 0.3s ease; /* حركة ناعمة عند تكبير الخط */
-		}
+			.bismillah {
+				font-size: 1.8rem;
+				margin: 20px 0;
+				color: var(--accent-color);
+				text-align: center;
+			}
 
-		/* 2. التجاوب مع الأجهزة (Responsive) */
-		@media (max-width: 768px) {
-			.quran-text { font-size: 1.8rem; padding: 10px; }
-			h1 { font-size: 1.5rem; }
-		}
+			/* أزرار التحكم الطائرة */
+			.controls-wrapper {
+				position: fixed;
+				bottom: 20px;
+				left: 20px;
+				display: flex;
+				gap: 10px;
+				z-index: 10000;
+			}
 
-		/* 3. تنسيق أزرار التحكم */
-		.font-controls {
-			position: fixed;
-			bottom: 20px;
-			left: 20px;
-			display: flex;
-			gap: 10px;
-			z-index: 1000;
-		}
+			.btn-action {
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				border: none;
+				background: var(--accent-color);
+				color: white;
+				font-size: 20px;
+				cursor: pointer;
+				box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+			}
 
-		.font-controls button {
-			width: 45px;
-			height: 45px;
-			border-radius: 50%;
-			border: none;
-			background: var(--accent-color);
-			color: white;
-			font-size: 20px;
-			cursor: pointer;
-			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-		}
-				
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	</style>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+			.back-btn {
+				background: #8b0000;
+				padding: 10px 20px;
+				border-radius: 50px;
+				color: white;
+				border: none;
+				cursor: pointer;
+				margin-bottom: 30px;
+				font-size: 16px;
+			}
+
+			.theme-toggle { position: absolute; top: 20px; left: 20px; }
+    </style>
 </head>
 <body>
 
-
-
-
-
-
-			<div class="font-controls">
-				<button onclick="changeFontSize(2)" title="تكبير الخط">+</button>
-				<button onclick="changeFontSize(-2)" title="تصغير الخط">-</button>
+			<div class="sidebar" id="mainMenu">
+			
+			<div class="surah-card" onclick="showSurah('sura1')">
+				<div class="surah-number">1</div>
+				<div class="surah-info">
+					<span class="surah-name">سورةالفاتحة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
 			</div>
 
+			<div class="surah-card" onclick="showSurah('sura2')">
+				<div class="surah-number">2</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة البقرة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura3')">
+				<div class="surah-number">3</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة آل عمران</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura4')">
+				<div class="surah-number">4</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النساء</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura5')">
+				<div class="surah-number">5</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المائدة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura6')">
+				<div class="surah-number">6</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأنعام</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura7')">
+				<div class="surah-number">7</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأعراف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura8')">
+				<div class="surah-number">8</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأنفال</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura9')">
+				<div class="surah-number">9</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التوبة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura10')">
+				<div class="surah-number">10</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة يونس</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura11')">
+				<div class="surah-number">11</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة هود</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura12')">
+				<div class="surah-number">12</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة يوسف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura13')">
+				<div class="surah-number">13</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الرعد</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura14')">
+				<div class="surah-number">14</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة إبراهيم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura15')">
+				<div class="surah-number">15</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحجر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura16')">
+				<div class="surah-number">16</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النحل</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura17')">
+				<div class="surah-number">17</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الإسراء</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura18')">
+				<div class="surah-number">18</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الكهف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura19')">
+				<div class="surah-number">19</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة مريم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura20')">
+				<div class="surah-number">20</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة طه</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
-	<div class="sidebar" id="mySidebar">
-		<h3 style="text-align: center; color: var(--accent-color);">الفهرس</h3>
-		<a onclick="showSurah('sura1')">1.سورة الفاتحة</a>
-		<a onclick="showSurah('sura2')">2.سورة البقرة</a>
-		<a onclick="showSurah('sura3')">3.سورة آل عمران</a>
-		<a onclick="showSurah('sura4')">4.سورة النساء</a>
-		<a onclick="showSurah('sura5')">5.سورة المائدة</a>
-		<a onclick="showSurah('sura6')">6.سورة الأنعام</a>
-		<a onclick="showSurah('sura7')">7. سورة الأعراف </a>
-		<a onclick="showSurah('sura8')">8.سورة الأنفال</a>
-		<a onclick="showSurah('sura9')">9.سورة التوبة</a>
-		<a onclick="showSurah('sura10')">10.سورة يونس</a>
-		<a onclick="showSurah('sura11')">11.سورة هود</a>
-		<a onclick="showSurah('sura12')">12.سورة يوسف</a>
-		<a onclick="showSurah('sura13')">13.سورة الرعد</a>
-		<a onclick="showSurah('sura14')">14.سورة إبراهيم</a>
-		<a onclick="showSurah('sura15')">15.سورة الحجر</a>
-		<a onclick="showSurah('sura16')">16.سورة النحل</a>
-		<a onclick="showSurah('sura17')">17.سورة الإسراء</a>
-		<a onclick="showSurah('sura18')">18.سورة الكهف</a>
-		<a onclick="showSurah('sura19')">19.سورة مريم</a>
-		<a onclick="showSurah('sura20')">20.سورة طه</a>
-		<a onclick="showSurah('sura21')">21.سورة الأنبياء</a>
-		<a onclick="showSurah('sura22')">22.سورة الحج</a>
-		<a onclick="showSurah('sura23')">23.سورة المؤمنون</a>
-		<a onclick="showSurah('sura24')">24.سورة النور</a>
-		<a onclick="showSurah('sura25')">25.سورة الفرقان</a>
-		<a onclick="showSurah('sura26')">26.سورة الشعراء</a>
-		<a onclick="showSurah('sura27')">27.سورة النمل</a>
-		<a onclick="showSurah('sura28')">28.سورة القصص</a>
-		<a onclick="showSurah('sura29')">29.سورة العنكبوت</a>
-		<a onclick="showSurah('sura30')">30.سورة الروم</a>
-		<a onclick="showSurah('sura31')">31.سورة لقمان</a>
-		<a onclick="showSurah('sura32')">32.سورة السجدة</a>
-		<a onclick="showSurah('sura33')">33.سورة الأحزاب</a>
-		<a onclick="showSurah('sura34')">34.سورة سبأ</a>
-		<a onclick="showSurah('sura35')">35.سورة فاطر</a>
-		<a onclick="showSurah('sura36')">36.سورة يس</a>
-		<a onclick="showSurah('sura37')">37.سورة الصافات</a>
-		<a onclick="showSurah('sura38')">38.سورة ص</a>
-		<a onclick="showSurah('sura39')">39.سورة الزمر</a>
-		<a onclick="showSurah('sura40')">40.سورة غافر</a>
-		<a onclick="showSurah('sura41')">41.سورة فصلت</a>
-		<a onclick="showSurah('sura42')">42.سورة الشورى</a>
-		<a onclick="showSurah('sura43')">43.سورة الزخرف</a>
-		<a onclick="showSurah('sura44')">44.سورة الدخان</a>
-		<a onclick="showSurah('sura45')">45.سورة الجاثية</a>
-		<a onclick="showSurah('sura46')">46.سورة الأحقاف</a>
-		<a onclick="showSurah('sura47')">47.سورة محمد</a>
-		<a onclick="showSurah('sura48')">48.سورة الفتح</a>
-		<a onclick="showSurah('sura49')">49.سورة الحجرات</a>
-		<a onclick="showSurah('sura50')">50.سورة ق</a>
-		<a onclick="showSurah('sura51')">51.سورة الذاريات</a>
-		<a onclick="showSurah('sura52')">52.سورة الطور</a>
-		<a onclick="showSurah('sura53')">53.سورة النجم</a>
-		<a onclick="showSurah('sura54')">54.سورة القمر</a>
-		<a onclick="showSurah('sura55')">55.سورة الرحمن</a>
-		<a onclick="showSurah('sura56')">56.سورة الواقعة</a>
-		<a onclick="showSurah('sura57')">57.سورة الحديد</a>
-		<a onclick="showSurah('sura58')">58.سورة المجادلة</a>
-		<a onclick="showSurah('sura59')">59.سورة الحشر</a>
-		<a onclick="showSurah('sura60')">60.سورة الممتحنة</a>
-		<a onclick="showSurah('sura61')">61.سورة الصف</a>
-		<a onclick="showSurah('sura62')">62.سورة الجمعة</a>
-		<a onclick="showSurah('sura63')">63.سورة المنافقون</a>
-		<a onclick="showSurah('sura64')">64.سورة التغابن</a>
-		<a onclick="showSurah('sura65')">65.سورة الطلاق</a>
-		<a onclick="showSurah('sura66')">66.سورة سالتحريم</a>
-		<a onclick="showSurah('sura67')">67.سورة الملك</a>
-		<a onclick="showSurah('sura68')">68. القلم</a>
-		<a onclick="showSurah('sura69')">69.سورة الحاقة</a>
-		<a onclick="showSurah('sura70')">70.سورة المعارج</a>
-		<a onclick="showSurah('sura71')">71.سورة نوح</a>
-		<a onclick="showSurah('sura72')">72.سورة الجن</a>
-		<a onclick="showSurah('sura73')">73.سورة المزمل</a>
-		<a onclick="showSurah('sura74')">74.سورة المدثر</a>
-		<a onclick="showSurah('sura75')">75.سورة القيامة</a>
-		<a onclick="showSurah('sura76')">76.سورة الإنسان</a>
-		<a onclick="showSurah('sura77')">77.سورة المرسلات</a>
-		<a onclick="showSurah('sura78')">78.سورة النبأ</a>
-		<a onclick="showSurah('sura79')">79.سورة النازعات</a>
-		<a onclick="showSurah('sura80')">80.سورة عبس</a>
-		<a onclick="showSurah('sura81')">81.سورة التكوير</a>
-		<a onclick="showSurah('sura82')">82.سورة الانفطار</a>
-		<a onclick="showSurah('sura83')">83.سورة المطففين</a>
-		<a onclick="showSurah('sura84')">84.سورة الانشقاق</a>
-		<a onclick="showSurah('sura85')">85.سورة البروج</a>
-		<a onclick="showSurah('sura86')">86.سورة الطارق</a>
-		<a onclick="showSurah('sura87')">87.سورة الأعلى</a>
-		<a onclick="showSurah('sura88')">88.سورة الغاشية</a>
-		<a onclick="showSurah('sura89')">89.سورة الفجر</a>
-		<a onclick="showSurah('sura90')">90.سورة البلد</a>
-		<a onclick="showSurah('sura91')">91.سورة الشمس</a>
-		<a onclick="showSurah('sura92')">92.سورة الليل</a>
-		<a onclick="showSurah('sura93')">93.سورة الضحى</a>
-		<a onclick="showSurah('sura94')">94.سورة الشرح</a>
-		<a onclick="showSurah('sura95')">95.سورة التين</a>
-		<a onclick="showSurah('sura96')">96.سورة العلق</a>
-		<a onclick="showSurah('sura97')">97.سورة القدر</a>
-		<a onclick="showSurah('sura98')">98.سورة البينة</a>
-		<a onclick="showSurah('sura99')">99.سورة الزلزلة</a>
-		<a onclick="showSurah('sura100')">100.سورة العاديات</a>
-		<a onclick="showSurah('sura101')">101.سورة القارعة</a>
-		<a onclick="showSurah('sura102')">102.سورة التكاثر</a>
-		<a onclick="showSurah('sura103')">103.سورة العصر</a>
-		<a onclick="showSurah('sura104')">104.سورة الهمزة</a>
-		<a onclick="showSurah('sura105')">105.سورة الفيل</a>
-		<a onclick="showSurah('sura106')">106.سورة قريش</a>
-		<a onclick="showSurah('sura107')">107.سورة الماعون</a>
-		<a onclick="showSurah('sura108')">108.سورة الكوثر</a>
-		<a onclick="showSurah('sura109')">109.سورة الكافرون</a>
-		<a onclick="showSurah('sura110')">110.سورة النصر</a>
-		<a onclick="showSurah('sura111')">111.سورة المسد</a>
-		<a onclick="showSurah('sura112')">112.سورة الإخلاص</a>
-		<a onclick="showSurah('sura113')">113.سورة الفلق</a>
-		<a onclick="showSurah('sura114')">114.سورة الناس</a>
-	</div>
-    <button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">الوضع الليلي 🌙</button>
+			<div class="surah-card" onclick="showSurah('sura21')">
+				<div class="surah-number">21</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأنبياء</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
 
+			<div class="surah-card" onclick="showSurah('sura22')">
+				<div class="surah-number">22</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحج</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura23')">
+				<div class="surah-number">23</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المؤمنون</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura24')">
+				<div class="surah-number">24</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النور</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura25')">
+				<div class="surah-number">25</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الفرقان</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura26')">
+				<div class="surah-number">26</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الشعراء</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura27')">
+				<div class="surah-number">27</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النمل</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura28')">
+				<div class="surah-number">28</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة القصص</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura29')">
+				<div class="surah-number">29</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة العنكبوت</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura30')">
+				<div class="surah-number">30</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الروم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura31')">
+				<div class="surah-number">31</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة لقمان</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura32')">
+				<div class="surah-number">32</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة السجدة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura33')">
+				<div class="surah-number">33</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأحزاب</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura34')">
+				<div class="surah-number">34</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة سبأ</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura35')">
+				<div class="surah-number">35</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة فاطر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura36')">
+				<div class="surah-number">36</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة يس</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura37')">
+				<div class="surah-number">37</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الصافات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura38')">
+				<div class="surah-number">38</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة ص</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura39')">
+				<div class="surah-number">39</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الزمر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura40')">
+				<div class="surah-number">40</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة غافر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura41')">
+				<div class="surah-number">41</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة فصلت</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura42')">
+				<div class="surah-number">42</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الشورى</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura43')">
+				<div class="surah-number">43</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الزخرف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura44')">
+				<div class="surah-number">44</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الدخان</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura45')">
+				<div class="surah-number">45</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الجاثية</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura46')">
+				<div class="surah-number">46</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأحقاف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura47')">
+				<div class="surah-number">47</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة محمد</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura48')">
+				<div class="surah-number">48</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الفتح</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura49')">
+				<div class="surah-number">49</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحجرات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura50')">
+				<div class="surah-number">50</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة ق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura51')">
+				<div class="surah-number">51</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الذاريات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura52')">
+				<div class="surah-number">52</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الطور</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura53')">
+				<div class="surah-number">53</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النجم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura54')">
+				<div class="surah-number">54</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة القمر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura55')">
+				<div class="surah-number">55</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الرحمن</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura56')">
+				<div class="surah-number">56</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الواقعة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura57')">
+				<div class="surah-number">57</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحديد</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura58')">
+				<div class="surah-number">58</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المجادلة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura59')">
+				<div class="surah-number">59</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحشر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura60')">
+				<div class="surah-number">60</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الممتحنة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura61')">
+				<div class="surah-number">61</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الصف</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura62')">
+				<div class="surah-number">62</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الجمعة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura63')">
+				<div class="surah-number">63</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المنافقون</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura64')">
+				<div class="surah-number">64</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التغابن</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura65')">
+				<div class="surah-number">65</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الطلاق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura66')">
+				<div class="surah-number">66</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التحريم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura67')">
+				<div class="surah-number">67</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الملك</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura68')">
+				<div class="surah-number">68</div>
+				<div class="surah-info">
+					<span class="surah-name">سورةالقلم</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura69')">
+				<div class="surah-number">69</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الحاقة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura70')">
+				<div class="surah-number">70</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المعارج</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura71')">
+				<div class="surah-number">71</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة نوح</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura72')">
+				<div class="surah-number">72</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الجن</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura73')">
+				<div class="surah-number">73</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المزمل</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura74')">
+				<div class="surah-number">74</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المدثر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura75')">
+				<div class="surah-number">75</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة القيامة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura76')">
+				<div class="surah-number">76</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الإنسان</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura77')">
+				<div class="surah-number">77</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المرسلات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura78')">
+				<div class="surah-number">78</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النبأ</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura79')">
+				<div class="surah-number">79</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النازعات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura80')">
+				<div class="surah-number">80</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة عبس</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura81')">
+				<div class="surah-number">81</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التكوير</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura82')">
+				<div class="surah-number">82</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الانفطار</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura83')">
+				<div class="surah-number">83</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المطففين</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura84')">
+				<div class="surah-number">84</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الانشقاق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura85')">
+				<div class="surah-number">85</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة البروج</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura86')">
+				<div class="surah-number">86</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الطارق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura87')">
+				<div class="surah-number">87</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الأعلى</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura88')">
+				<div class="surah-number">88</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الغاشية</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura89')">
+				<div class="surah-number">89</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الفجر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura90')">
+				<div class="surah-number">90</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة البلد</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura91')">
+				<div class="surah-number">91</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الشمس</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura92')">
+				<div class="surah-number">92</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الليل</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura93')">
+				<div class="surah-number">93</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الضحى</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura94')">
+				<div class="surah-number">94</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الشرح</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura95')">
+				<div class="surah-number">95</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التين</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura96')">
+				<div class="surah-number">96</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة العلق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura97')">
+				<div class="surah-number">97</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة القدر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura98')">
+				<div class="surah-number">98</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة البينة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura99')">
+				<div class="surah-number">99</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الزلزلة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura100')">
+				<div class="surah-number">100</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة العاديات</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura101')">
+				<div class="surah-number">101</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة القارعة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura102')">
+				<div class="surah-number">102</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة التكاثر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura103')">
+				<div class="surah-number">103</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة العصر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura104')">
+				<div class="surah-number">104</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الهمزة</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura105')">
+				<div class="surah-number">105</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الفيل</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura106')">
+				<div class="surah-number">106</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة قريش</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura107')">
+				<div class="surah-number">107</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الماعون</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura108')">
+				<div class="surah-number">108</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الكوثر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura109')">
+				<div class="surah-number">109</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الكافرون</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura110')">
+				<div class="surah-number">110</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة النصر</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura111')">
+				<div class="surah-number">111</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة المسد</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura112')">
+				<div class="surah-number">112</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الإخلاص</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura113')">
+				<div class="surah-number">113</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الفلق</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+			<div class="surah-card" onclick="showSurah('sura114')">
+				<div class="surah-number">114</div>
+				<div class="surah-info">
+					<span class="surah-name">سورة الناس</span>
+					<span class="surah-meta">عدد الآيات • نوع السورة</span>
+				</div>
+			</div>
+
+		<button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">الوضع الليلي 🌙</button>
+	
+			</div>
 			<div class="surah-container" id="sura1">
 			<h1>سُورَةُ الفَاتِحَةِ</h1>
 			<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
@@ -1547,45 +2229,34 @@
 	
 	
 	<script>
-	
-	
-	
-	
-	function changeFontSize(step) {
-    const texts = document.querySelectorAll('.quran-text');
-    texts.forEach(text => {
-        // الحصول على الحجم الحالي وتحويله لرقم
-        let currentSize = parseFloat(window.getComputedStyle(text).fontSize);
-        // تحديث الحجم
-        text.style.fontSize = (currentSize + step) + 'px';
-    });
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-			function showSurah(id) {
-			// إخفاء كل السور أولاً
-			var surahs = document.getElementsByClassName('surah-container');
-			for (var i = 0; i < surahs.length; i++) {
-				surahs[i].classList.remove('active');
-			}
+		function showSurah(id) {
+			// إخفاء الفهرس
+			document.querySelector('.sidebar').style.display = 'none';
 			
-			// إظهار السورة المطلوبة
-			var target = document.getElementById(id);
+			// إغلاق أي سورة مفتوحة وإظهار المطلوبة
+			document.querySelectorAll('.surah-container').forEach(s => s.classList.remove('active'));
+			const target = document.getElementById(id);
 			if (target) {
 				target.classList.add('active');
+				// التأكد من وجود زر رجوع
+				if (!target.querySelector('.back-btn')) {
+					target.insertAdjacentHTML('afterbegin', '<button class="btn back-btn" onclick="goBack()">← العودة للفهرس</button>');
+				}
+				window.scrollTo(0, 0);
 			}
+		}
+
+		function goBack() {
+			document.querySelectorAll('.surah-container').forEach(s => s.classList.remove('active'));
+			document.querySelector('.sidebar').style.display = 'block';
+			window.scrollTo(0, 0);
+		}
+
+		function changeFontSize(step) {
+			document.querySelectorAll('.quran-text').forEach(el => {
+				let currentSize = parseFloat(window.getComputedStyle(el).fontSize);
+				el.style.fontSize = (currentSize + step) + 'px';
+			});
 		}
 	</script>
 
