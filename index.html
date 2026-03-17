@@ -95,11 +95,7 @@
 				margin-left: 15px;
 			}
 
-			.surah-info {
-				flex-grow: 1;
-				display: flex;
-				flex-direction: column;
-			}
+
 
 			.surah-name {
 				font-size: 1.3rem;
@@ -119,21 +115,6 @@
 				color: var(--accent-color);
 				opacity: 0.5;
 			}
-
-			.surah-card {
-				background: var(--container-bg);
-				margin: 10px 0;
-				padding: 15px;
-				border-radius: 12px;
-				cursor: pointer;
-				box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-				transition: transform 0.2s;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.surah-card:hover { transform: scale(1.02); }
 
 			/* الكود القاضي للتوسيط المطلق للسورة */
 			.surah-container { display: none; }
@@ -156,42 +137,23 @@
 			/* تنسيق نص القرآن (نفس الموقع اللي طلبته) */
 			.quran-text {
 				font-family: 'KFGQPC Uthmanic Script HAFS', sans-serif !important;
-				font-size: 2.2rem;
-				line-height: 2.5;
+				font-size: 1.5rem;
+				line-height: 2.3;
 				text-align: center;
-				max-width: 850px;
+				max-width: 800px;
 				margin: 0 auto !important;
 				font-feature-settings: "ss01" on, "ss03" on, "calt" on, "liga" on;
+				color: var(--text-color);
 			}
+			
 
 			.bismillah {
-				font-size: 1.8rem;
+				font-size: 1.9rem;
 				margin: 20px 0;
 				color: var(--accent-color);
 				text-align: center;
 			}
 
-			/* أزرار التحكم الطائرة */
-			.controls-wrapper {
-				position: fixed;
-				bottom: 20px;
-				left: 20px;
-				display: flex;
-				gap: 10px;
-				z-index: 10000;
-			}
-
-			.btn-action {
-				width: 50px;
-				height: 50px;
-				border-radius: 50%;
-				border: none;
-				background: var(--accent-color);
-				color: white;
-				font-size: 20px;
-				cursor: pointer;
-				box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-			}
 
 			.back-btn {
 				background: #8b0000;
@@ -202,9 +164,7 @@
 				cursor: pointer;
 				margin-bottom: 30px;
 				font-size: 16px;
-			}
-
-			.theme-toggle { position: absolute; top: 20px; left: 20px; }
+		
     </style>
 </head>
 <body>
