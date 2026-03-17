@@ -56,20 +56,17 @@
 				padding-bottom: 10px;
 			}
 
-			/* تنسيق بطاقة السورة */
 			.surah-card {
-				background: #ffffff;
-				margin-bottom: 15px;
-				padding: 18px 25px;
-				border-radius: 15px;
+				background: var(--container-bg) !important;
+				color: var(--text-color) !important; /* هذا السطر هو اللي يخلي الكتابة تصير بيضا بالليل */
+				margin: 10px 0;
+				padding: 15px;
+				border-radius: 12px;
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				border: 1px solid #eee;
+				box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 				transition: all 0.3s ease;
-				cursor: pointer;
-				position: relative;
-				overflow: hidden;
 			}
 
 			/* تأثير عند تمرير الماوس */
@@ -164,13 +161,13 @@
 				cursor: pointer;
 				margin-bottom: 30px;
 				font-size: 16px;
-		
+
     </style>
 </head>
 <body>
-
-			<div class="sidebar" id="mainMenu">
 			
+			<button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">الوضع الليلي 🌙</button>
+			<div class="sidebar" id="mainMenu">
 			<div class="surah-card" onclick="showSurah('sura1')">
 				<div class="surah-number">1</div>
 				<div class="surah-info">
@@ -1083,7 +1080,7 @@
 				</div>
 			</div>
 
-		<button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">الوضع الليلي 🌙</button>
+		
 	
 			</div>
 			<div class="surah-container" id="sura1">
@@ -2189,35 +2186,47 @@
 	
 	
 	<script>
+// دالة فتح السورة مع تسجيل "حالة" في تاريخ المتصفح
 		function showSurah(id) {
 			// إخفاء الفهرس
 			document.querySelector('.sidebar').style.display = 'none';
 			
-			// إغلاق أي سورة مفتوحة وإظهار المطلوبة
+			// إظهار السورة المطلوبة
 			document.querySelectorAll('.surah-container').forEach(s => s.classList.remove('active'));
 			const target = document.getElementById(id);
+			
 			if (target) {
 				target.classList.add('active');
-				// التأكد من وجود زر رجوع
-				if (!target.querySelector('.back-btn')) {
-					target.insertAdjacentHTML('afterbegin', '<button class="btn back-btn" onclick="goBack()">← العودة للفهرس</button>');
-				}
 				window.scrollTo(0, 0);
+
+				// --- الجزء الأهم ---
+				// إضافة حالة جديدة لتاريخ المتصفح عشان لما يرجع ما يطلع من الموقع
+				history.pushState({ isSurahOpen: true }, ""); 
 			}
 		}
 
+		// دالة الرجوع للفهرس
 		function goBack() {
 			document.querySelectorAll('.surah-container').forEach(s => s.classList.remove('active'));
 			document.querySelector('.sidebar').style.display = 'block';
 			window.scrollTo(0, 0);
+			
+			// إذا كان الرجوع تم عن طريق زر داخل الصفحة، نحتاج تنظيف التاريخ
+			if (history.state && history.state.isSurahOpen) {
+				history.back();
+			}
 		}
 
-		function changeFontSize(step) {
-			document.querySelectorAll('.quran-text').forEach(el => {
-				let currentSize = parseFloat(window.getComputedStyle(el).fontSize);
-				el.style.fontSize = (currentSize + step) + 'px';
-			});
-		}
+		// مراقبة زر الرجوع الخاص بالجوال (Back Button)
+		window.onpopstate = function(event) {
+			// إذا ضغط المستخدم زر رجوع الجوال وكانت السورة مفتوحة
+			const activeSurah = document.querySelector('.surah-container.active');
+			if (activeSurah) {
+				// إغلاق السورة وإظهار الفهرس بدون الخروج من الموقع
+				activeSurah.classList.remove('active');
+				document.querySelector('.sidebar').style.display = 'block';
+			}
+		};
 	</script>
 
     <script>
